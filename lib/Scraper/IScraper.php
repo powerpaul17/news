@@ -23,4 +23,5 @@ interface IScraper
      *
      */
     public function scrapeContent(string $url): array;
+
 }
