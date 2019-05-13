@@ -25,4 +25,5 @@ class Scraper implements IScraper
     {
         return $this->scraper->fetchContent($url);
     }
+
 }
