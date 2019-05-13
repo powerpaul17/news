@@ -18,6 +18,7 @@ use FeedIo\FeedIo;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 use Favicon\Favicon;
+use Graby\Graby;
 
 use OCA\News\Config\LegacyConfig;
 use OCA\News\Config\FetcherConfig;
@@ -39,6 +40,7 @@ use OCA\News\Fetcher\Fetcher;
 use OCP\User\Events\BeforeUserDeletedEvent;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use OCA\News\Scraper\Scraper;
 
 /**
  * Class Application
@@ -168,6 +170,12 @@ class Application extends App implements IBootstrap
             );
             $config->read($c->get('configFile'), false);
             return $config;
+        });
+
+        $$context->registerService(Scraper::class, function (ContainerInterface $c): Scraper {
+            $graby = new Graby();
+            $scraper = new Scraper($graby);
+            return $scraper;
         });
     }
 

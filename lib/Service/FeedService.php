@@ -31,6 +31,7 @@ use OCA\News\Db\ItemMapper;
 use OCA\News\Fetcher\Fetcher;
 use OCA\News\Utility\Time;
 use Psr\Log\LoggerInterface;
+use OCA\News\Scraper\Scraper;
 
 /**
  * Class LegacyFeedService
@@ -49,6 +50,7 @@ class FeedService extends Service
     private $autoPurgeMinimumInterval;
     private $purifier;
     private $loggerParams;
+    private $scraper;
 
     public function __construct(
         FeedMapper $legacyFeedMapper,
@@ -59,6 +61,7 @@ class FeedService extends Service
         Time $timeFactory,
         IConfig $config,
         HTMLPurifier $purifier
+        Scraper $scraper
     ) {
         parent::__construct($legacyFeedMapper, $logger);
         $this->feedFetcher = $feedFetcher;
@@ -74,6 +77,7 @@ class FeedService extends Service
         );
         $this->purifier = $purifier;
         $this->loggerParams = ['app' => Application::NAME];
+        $this->scraper = $scraper;
     }
 
     /**
@@ -276,6 +280,11 @@ class FeedService extends Service
             for ($i = $itemCount - 1; $i >= 0; $i--) {
                 $item = $items[$i];
                 $item->setFeedId($existingFeed->getId());
+
+                if ($existingFeed->getFullTextEnabled()) {
+                    $scraperResult = $this->scraper->scrapeContent($item->getUrl());
+                    $item->setBody($scraperResult['html']);
+                }
 
                 try {
                     $dbItem = $this->itemMapper->findByGuidHash(
