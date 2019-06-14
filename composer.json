@@ -53,7 +53,7 @@
     "ext-libxml": "*",
     "ext-dom": "*",
     "ext-curl": "*",
-    "j0k3r/graby": "^2.0@dev",
+    "j0k3r/graby": "^2.0",
     "php-http/guzzle6-adapter": "*"
   },
   "require-dev": {
