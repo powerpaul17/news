@@ -26,10 +26,10 @@ interface IScraper
     /**
      * Get the scraped content
      *
-     * @return string|null
+     * @return string
      *
      */
-    public function getContent(): ?string;
+    public function getContent(): string;
 
     /**
      * Get the RTL (rigth-to-left) information
