@@ -113,7 +113,7 @@ class FeedService extends Service
              * @var Feed   $feed
              * @var Item[] $items
              */
-            list($feed, $items) = $this->feedFetcher->fetch($feedUrl, true, null, false, $user, $password);
+            list($feed, $items) = $this->feedFetcher->fetch($feedUrl, true, null, $user, $password);
             // try again if feed exists depending on the reported link
             if ($feed === null) {
                 throw new ServiceNotFoundException($this->l10n->t('Can not add feed: Unable to parse feed'));
@@ -227,7 +227,6 @@ class FeedService extends Service
                 $location,
                 false,
                 $existingFeed->getHttpLastModified(),
-                $existingFeed->getFullTextEnabled(),
                 $existingFeed->getBasicAuthUser(),
                 $existingFeed->getBasicAuthPassword()
             );
