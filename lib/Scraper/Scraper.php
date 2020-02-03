@@ -82,7 +82,7 @@ class Scraper implements IScraper
         return true;
     }
 
-    public function getContent(): ?string
+    public function getContent(): string
     {
         if ($this->readability === null) {
             return null;
