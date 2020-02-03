@@ -48,8 +48,7 @@ class ShowFeed extends Command
             ->setDescription('Prints a JSON string which represents the given feed as it would be in the DB.')
             ->addArgument('feed', InputArgument::REQUIRED, 'Feed to parse')
             ->addOption('user', 'u', InputOption::VALUE_OPTIONAL, 'Username for the feed')
-            ->addOption('password', 'p', InputOption::VALUE_OPTIONAL, 'Password for the feed')
-            ->addOption('full-text', 'f', InputOption::VALUE_NONE, 'Usa a scraper to get full text');
+            ->addOption('password', 'p', InputOption::VALUE_OPTIONAL, 'Password for the feed');
     }
 
     /**
@@ -65,7 +64,6 @@ class ShowFeed extends Command
         $url   = $input->getArgument('feed');
         $user = $input->getOption('user');
         $password = $input->getOption('password');
-        $fullTextEnabled = (bool) $input->getOption('full-text');
 
         try {
             list($feed, $items) = $this->feedFetcher->fetch($url, true, null, $fullTextEnabled, $user, $password);

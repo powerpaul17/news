@@ -25,7 +25,6 @@ use OCP\IL10N;
 use OCA\News\Db\Item;
 use OCA\News\Db\Feed;
 use OCA\News\Utility\Time;
-use OCA\News\Scraper\Scraper;
 use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
 
@@ -65,7 +64,6 @@ class FeedFetcher implements IFeedFetcher
     public function __construct(
         FeedIo $fetcher,
         Favicon $favicon,
-        Scraper $scraper,
         IL10N $l10n,
         Time $time,
         LoggerInterface $logger
@@ -101,7 +99,6 @@ class FeedFetcher implements IFeedFetcher
         string $url,
         bool $favicon,
         ?string $lastModified,
-        bool $fullTextEnabled,
         ?string $user,
         ?string $password
     ): array {
@@ -137,33 +134,12 @@ class FeedFetcher implements IFeedFetcher
         );
 
         $items = [];
-        $RTL = $this->determineRtl($parsedFeed);
-        $feedName = $parsedFeed->getTitle();
         $this->logger->debug('Feed {url} was modified since last fetch. #{count} items', [
             'url'   => $url,
             'count' => count($parsedFeed),
         ]);
-
         foreach ($parsedFeed as $item) {
-            $body = null;
-            $currRTL = $RTL;
-
-            // Scrape the content if full-text is enabled and if the feed provides a URL
-            if ($fullTextEnabled) {
-                $itemLink = $item->getLink();
-                if ($itemLink !== null && $this->scraper->scrape($itemLink)) {
-                    $body = $this->scraper->getContent();
-                    $currRTL = $this->scraper->getRTL($currRTL);
-                }
-            }
-
-            $builtItem = $this->buildItem($item, $body, $currRTL);
-            $this->logger->debug('Added item {title} for feed {feed} publishdate: {datetime}', [
-                'title' => $builtItem->getTitle(),
-                'feed'  => $feedName,
-                'datetime'  => $builtItem->getLastModified(),
-            ]);
-            $items[] = $builtItem;
+            $items[] = $this->buildItem($item, $parsedFeed);
         }
 
         return [$feed, $items];
@@ -259,12 +235,8 @@ class FeedFetcher implements IFeedFetcher
             $item->setAuthor($this->decodeTwice($author->getName()));
         }
 
-        // Use description from feed if body is not provided (by a scraper)
-        if ($body === null) {
-            $body = $parsedItem->getValue("content:encoded") ?? $parsedItem->getDescription();
-        }
-
         // purification is done in the service layer
+        $body = $parsedItem->getValue("content:encoded") ?? $parsedItem->getDescription();
         $body = mb_convert_encoding(
             $body,
             'HTML-ENTITIES',
@@ -305,6 +277,12 @@ class FeedFetcher implements IFeedFetcher
         }
 
         $item->generateSearchIndex();
+
+        $this->logger->debug('Added item {title} for feed {feed} publishdate: {datetime}', [
+            'title' => $item->getTitle(),
+            'feed'  => $parsedFeed->getTitle(),
+            'datetime'  => $item->getLastModified(),
+        ]);
         return $item;
     }
 
