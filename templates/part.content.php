@@ -88,6 +88,18 @@
                             ?>">
                         </button>
                     </li>
+                    <li ng-click="Content.toggleInteresting(item.id)"
+                        class="util"
+                        news-stop-propagation>
+                        <button class="icon-category-enabled"
+                            ng-hide="item.uninteresting"
+                            title="Interessant">
+                        </button>
+                        <button class="icon-category-disabled"
+                            ng-show="item.uninteresting"
+                            title="Uninteressant">
+                        </button>
+                    </li>
                     <li class="util more" news-stop-propagation ng-hide="noPlugins">
                         <button class="icon-more" news-toggle-show="#actions-{{item.id}}"></button>
                         <div class="article-actions" id="actions-{{item.id}}">

@@ -86,6 +86,10 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
         item.keepUnread = !item.keepUnread;
     };
 
+    this.toggleInteresting = function(itemId) {
+        ItemResource.toggleInteresting(itemId);
+    };
+
     var getOrdering = function () {
         var ordering = SettingsResource.get('oldestFirst');
 

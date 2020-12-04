@@ -112,6 +112,33 @@ app.factory('ItemResource', function (Resource, $http, BASE_URL, ITEM_BATCH_SIZE
         }
     };
 
+    ItemResource.prototype.toggleInteresting = function (itemId) {
+        if (this.get(itemId).uninteresting) {
+            this.markAsUninteresting(itemId, false);
+        } else {
+            this.markAsUninteresting(itemId, true);
+        }
+    };
+
+    ItemResource.prototype.markAsUninteresting = function (itemId, uninteresting) {
+        const it = this.get(itemId);
+
+        it.uninteresting = uninteresting;
+        if(uninteresting) {
+            this.markItemRead(itemId, true);
+        } else {
+            this.markItemRead(itemId, false);
+        }
+
+        return this.http({
+            url: this.BASE_URL + '/items/' + it.feedId + '/' + it.guidHash + '/uninteresting',
+            method: 'POST',
+            data: {
+                uninteresting: uninteresting
+            }
+        });
+    };
+
 
     ItemResource.prototype.markItemRead = function (itemId, isRead) {
         if (isRead === undefined) {
