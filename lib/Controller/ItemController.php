@@ -213,6 +213,31 @@ class ItemController extends Controller
     /**
      * @NoAdminRequired
      *
+     * @param int $feedId
+     * @param string $guidHash
+     * @param bool $uninteresting
+     * @return array|\OCP\AppFramework\Http\JSONResponse
+     */
+    public function uninteresting($feedId, $guidHash, $uninteresting)
+    {
+        try {
+            $this->itemService->uninteresting(
+                $feedId,
+                $guidHash,
+                $uninteresting,
+                $this->userId
+            );
+        } catch (ServiceException $ex) {
+            return $this->error($ex, Http::STATUS_NOT_FOUND);
+        }
+
+        return [];
+    }
+
+
+    /**
+     * @NoAdminRequired
+     *
      * @param int  $itemId
      * @param bool $isRead
      * @return array|\OCP\AppFramework\Http\JSONResponse

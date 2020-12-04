@@ -189,6 +189,24 @@ class ItemService extends Service
     }
 
 
+    public function uninteresting($feedId, $guidHash, $uninteresting, $userId)
+    {
+        try {
+            $item = $this->itemMapper->findByGuidHash(
+                $guidHash,
+                $feedId,
+                $userId
+            );
+
+            $item->setUninteresting($uninteresting);
+
+            $this->itemMapper->update($item);
+        } catch (DoesNotExistException $ex) {
+            throw new ServiceNotFoundException($ex->getMessage());
+        }
+    }
+
+
     /**
      * Read or unread an item
      *
