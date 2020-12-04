@@ -68,6 +68,8 @@ class Item extends Entity implements IAPI, \JsonSerializable
     /** @var bool */
     protected $starred = false;
 
+    protected $uninteresting = false;
+
     public function __construct()
     {
         $this->addType('contentHash', 'string');
@@ -91,6 +93,7 @@ class Item extends Entity implements IAPI, \JsonSerializable
         $this->addType('fingerprint', 'string');
         $this->addType('unread', 'boolean');
         $this->addType('starred', 'boolean');
+        $this->addType('uninteresting', 'boolean');
     }
 
     /**
@@ -124,6 +127,7 @@ class Item extends Entity implements IAPI, \JsonSerializable
         $item->setRtl($import['rtl']);
         $item->setUnread($import['unread']);
         $item->setStarred($import['starred']);
+        $item->setUninteresting($import['uninteresting']);
 
         return $item;
     }
@@ -290,6 +294,11 @@ class Item extends Entity implements IAPI, \JsonSerializable
         return $this->unread;
     }
 
+    public function isUninteresting(): bool
+    {
+        return $this->uninteresting;
+    }
+
     /**
      * Turns entity attributes into an array
      */
@@ -312,6 +321,7 @@ class Item extends Entity implements IAPI, \JsonSerializable
             'feedId' => $this->getFeedId(),
             'unread' => $this->isUnread(),
             'starred' => $this->isStarred(),
+            'uninteresting' => $this->isUninteresting(),
             'lastModified' => $this->getLastModified(),
             'rtl' => $this->getRtl(),
             'intro' => $this->getIntro(),
@@ -480,6 +490,16 @@ class Item extends Entity implements IAPI, \JsonSerializable
         if ($this->starred !== $starred) {
             $this->starred = $starred;
             $this->markFieldUpdated('starred');
+        }
+
+        return $this;
+    }
+
+    public function setUninteresting(bool $uninteresting): self
+    {
+        if ($this->uninteresting !== $uninteresting) {
+            $this->uninteresting = $uninteresting;
+            $this->markFieldUpdated('uninteresting');
         }
 
         return $this;
